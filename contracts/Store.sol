@@ -27,6 +27,7 @@ contract Store {
     consumersList = candidateNames2;
   }
 
+/*
   function buy(bytes32 code) payable public {
     uint req_cost;
     uint i;
@@ -43,6 +44,7 @@ contract Store {
     wallets[creatorAddress] += cost;
     // return wallets[creatorAddress];
   }
+  */
 
   function addMedia(bytes32 code, bytes32 mname, uint cost) public {
     creatorStructs[msg.sender].mediaList.push(code);
