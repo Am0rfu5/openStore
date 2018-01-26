@@ -26,10 +26,12 @@ let index = 0;
 window.setAccount = function() {
   index = $("#account").val();
   web3.eth.defaultaAccount = web3.eth.accounts[index];
-  $("#logs").html(web3.eth.defaultaAccount);
+  $("#logs").html(web3.eth.defaultaAccount + "</br>");
   Store.deployed().then(function(contractInstance) {
     contractInstance.allCreators.call().then(function(candidateArray) {
+      //candidateArray --> byte32[] datatype
       for(let i = 0; i < candidateArray.length; i++) {
+        // console.log("candidateArray: " + candidateArray[i] + " -> "+web3.toUtf8(candidateArray[i]));
         creators[web3.eth.accounts[i]] = web3.toUtf8(candidateArray[i]);
       }
       if (web3.eth.defaultaAccount in creators) {
@@ -40,14 +42,14 @@ window.setAccount = function() {
       }
     });
   });
-  console.log(web3.eth.defaultaAccount);
+  console.log("setAccount: " + web3.eth.defaultaAccount);
 }
 
 window.addCreation = function() {
   let creatorAddress = web3.eth.defaultaAccount;
   let mediaTitle = $("#title").val();
   let mediaPrice = parseInt($("#price").val());
-  let mediaHash = mediaTitle;
+  // let mediaHash = mediaTitle;
   Store.deployed().then(function(contractInstance) {
     contractInstance.addMedia.sendTransaction(creatorAddress, mediaTitle, mediaTitle, mediaPrice, {gas: 140000, from: web3.eth.accounts[0]}).then(function(r) {
       console.log(r);
@@ -57,7 +59,7 @@ window.addCreation = function() {
 }
 
 function loadCreator() {
-  $("#logs").append("user is a creator. Display creator content");
+  $("#logs").append(" user is a creator. Display creator content </br>");
   let address = web3.eth.defaultaAccount;
   Store.deployed().then(function(contractInstance) {
     contractInstance.getWallet.call(address).then(function(balance) {
@@ -65,8 +67,8 @@ function loadCreator() {
     });
   });
   Store.deployed().then(function(contractInstance) {
-    contractInstance.getMediaCount.call(address).then(function(r) {
-      let mediaCount = parseInt(r.c[0]);
+    contractInstance.getMediaCount.call(address).then(function(mediaSize) {
+      let mediaCount = parseInt(mediaSize.c[0]);
       if (mediaCount != 0) {
         $("#logs").append('<h3>You have uploaded '+mediaCount+' creations.</h3><pre id="json"></pre>');
         for (let i = 0; i < mediaCount; i++) {
@@ -89,10 +91,35 @@ function loadCreator() {
 }
 
 function loadConsumer() {
-  $("#logs").append("user is a consumer. Display consumer content");
-  for (var key in creators) {
-    $("#logs").append("</br>"+creators[key]);
-  }
+  $("#logs").append(" user is a consumer. Display consumer content </br>");
+  Store.deployed().then(async function(contractInstance) {
+
+    for (var key in creators) {
+      $("#logs").append('</br><button type="button" class="btn btn-info" data-toggle="collapse" data-target=#'+creators[key]+'>'+creators[key]+'</button><div id='+creators[key]+' class="collapse"></div>');
+      let address = key;
+      var mediaSize = await contractInstance.getMediaCount.call(address);
+      // .then(function(mediaSize) {
+
+        let mediaCount = parseInt(mediaSize.c[0]);
+        if (mediaCount != 0) {
+          $("#"+creators[key]).append(mediaCount+' songs');
+          // </h3><pre id="json"></pre>');
+          // for (let i = 0; i < mediaCount; i++) {
+          //   Store.deployed().then(function(contractInstance2) {
+          //     contractInstance2.getMedia.call(address, i).then(function(r) {
+          //       console.log(r);
+          //       document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
+          //     });
+          //   });
+          // }
+        }
+        else {
+          $("#"+creators[key]).append('No songs');
+        }
+
+      // });
+    }
+  });
 }
 
 $( document ).ready(function() {
