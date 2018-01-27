@@ -61,7 +61,7 @@ function loadCreator() {
         $("#logs").append('<h3>You have uploaded '+mediaCount+' creations.</h3><pre id="json"></pre>');
         for (let i = 0; i < mediaCount; i++) {
           Store.deployed().then(function(contractInstance2) {
-            contractInstance2.getMedia.call(address, i).then(function(r1) {
+            contractInstance2.getMedia.call(address, i, web3.eth.defaultaAccount).then(function(r1) {
               // console.log(r1);
               let cururl = r1[0];
               console.log("url: "+cururl);

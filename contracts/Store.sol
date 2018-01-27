@@ -72,9 +72,19 @@ contract Store {
     return wallets[creatorAddress];
   }
 
-  function getMedia(address creatorAddress, uint index) view public returns (string, bytes32, uint) {
+  function getMedia(address creatorAddress, uint index, address consumerAddress) view public returns (string, bytes32, uint) {
     string url = creatorStructs[creatorAddress].creatorMediaList[index];
+    require(checkMediaForConsumer(url, consumerAddress));
     return (url, mediaStructs[url].title, mediaStructs[url].price);
+  }
+
+  function checkMediaForConsumer(string code, address consumerAddress) view public returns (bool) {
+    for (uint i = 0; i < consumerStructs[consumerAddress].consumerMediaList.length; i++){
+      if (sha3(consumerStructs[consumerAddress].consumerMediaList[i]) == sha3(code)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function getMediaCount(address creatorAddress) view public returns (uint) {
