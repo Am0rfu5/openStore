@@ -4,6 +4,7 @@ contract Store {
 
   // We use the struct datatype to store the voter information.
   struct Media {
+    address creator;
     bytes32 title;
     uint price;
     address[] consumers;
@@ -26,6 +27,8 @@ contract Store {
   bytes32[] public creatorsList;
   bytes32[] public consumersList;
 
+  event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
   /* When the contract is deployed on the blockchain, we will initialize
    the total number of tokens for sale, cost per token and all the candidates
    */
@@ -34,24 +37,18 @@ contract Store {
     consumersList = candidateNames2;
   }
 
-/*
-  function buy(bytes32 code) payable public {
-    uint req_cost;
-    uint i;
-    bytes32 hashcode;
-    for(i = 0; i < creatorStructs[creatorAddress].creatorMediaList.length; i++) {
-      hashcode = creatorStructs[creatorAddress].creatorMediaList[i];
-      if (creatorStructs[creatorAddress].mediaStructs[hashcode].title == mname) {
-        req_cost = creatorStructs[creatorAddress].mediaStructs[hashcode].price;
-        break;
-      }
-    }
-    require(req_cost == cost);
-    creatorStructs[creatorAddress].mediaStructs[hashcode].audience.push(msg.sender);
-    wallets[creatorAddress] += cost;
-    // return wallets[creatorAddress];
+
+  function buy(string code) payable public returns(bool success) {
+    uint amount = mediaStructs[code].price;
+    address receiver = mediaStructs[code].creator;
+    if (wallets[msg.sender] < mediaStructs[code].price) return false;
+    wallets[msg.sender] -= amount;
+    wallets[receiver] += amount;
+    Transfer(msg.sender, receiver, amount);
+    consumerStructs[msg.sender].consumerMediaList.push(code);
+    mediaStructs[code].consumers.push(msg.sender);
+    return true;
   }
-  */
 
   function addMedia(string code, bytes32 mname, uint cost) view public returns (bytes32, uint) {
     require(validMedia(code));
