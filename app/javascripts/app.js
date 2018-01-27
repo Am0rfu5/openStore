@@ -50,9 +50,9 @@ function loadCreator() {
   $("#logs").append(" user is a creator. Display creator content </br>");
   let address = web3.eth.defaultaAccount;
   Store.deployed().then(function(contractInstance) {
-    contractInstance.getWallet.call(address).then(function(balance) {
-      $("#logs").append("<h3>Your account balance :  $"+balance.toString()+"</h3>");
-    });
+    // contractInstance.getWallet.call(address).then(function(balance) {
+    //   $("#logs").append("<h3>Your account balance :  $"+balance.toString()+"</h3>");
+    // });
   });
   Store.deployed().then(function(contractInstance) {
     contractInstance.getMediaCount.call(address).then(function(mediaSize) {
@@ -61,7 +61,7 @@ function loadCreator() {
         $("#logs").append('<h3>You have uploaded '+mediaCount+' creations.</h3><pre id="json"></pre>');
         for (let i = 0; i < mediaCount; i++) {
           Store.deployed().then(function(contractInstance2) {
-            contractInstance2.getMedia.call(address, i, web3.eth.defaultaAccount).then(function(r1) {
+            contractInstance2.getMedia.call(address, i).then(function(r1) {
               // console.log(r1);
               let cururl = r1[0];
               console.log("url: "+cururl);
@@ -97,7 +97,15 @@ function loadConsumer() {
           for (let i = 0; i < mediaCount; i++) {
               var r = await contractInstance.getMedia.call(address, i);
                 console.log("here5: "+r[0]);
-                $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><audio controls src="'+r[0]+'"></audio></td>');
+                var checkBool = await contractInstance.checkMediaForConsumer.call(r[0],web3.eth.defaultaAccount);
+                console.log("checkMediaForConsumer: "+checkBool);
+                if (checkBool) {
+                  $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><audio controls src="'+r[0]+'"></audio></td>');
+                }
+                else{
+                  $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><button type="button" onclick="buy(\'' + r[0] + '\')">Buy</button></td>');
+                }
+
           }
           $('#'+creators[key]).append('</tr></table>');
         }
@@ -107,6 +115,15 @@ function loadConsumer() {
 
       // });
     }
+  });
+}
+
+window.buy = function(url){
+  Store.deployed().then(function(contractInstance) {
+    console.log("urlll: "+url);
+    contractInstance.buy.sendTransaction(url,{gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
+      console.log("buy here: "+r);
+    });
   });
 }
 

@@ -20,7 +20,8 @@ contract Store {
 
   string[] allMedia;
 
-  mapping (address => uint) public wallets;
+//  mapping (address => uint) public wallets;
+  uint[] wallets;
   mapping (string => Media) mediaStructs;
   mapping (address => Creator) creatorStructs;
   mapping (address => Consumer) consumerStructs;
@@ -32,18 +33,19 @@ contract Store {
   /* When the contract is deployed on the blockchain, we will initialize
    the total number of tokens for sale, cost per token and all the candidates
    */
-  function Store(bytes32[] candidateNames1, bytes32[] candidateNames2) public {
+  function Store(bytes32[] candidateNames1, bytes32[] candidateNames2, uint[] balance) public {
     creatorsList = candidateNames1;
     consumersList = candidateNames2;
+    wallets = balance;
   }
 
 
   function buy(string code) payable public returns(bool success) {
     uint amount = mediaStructs[code].price;
     address receiver = mediaStructs[code].creator;
-    if (wallets[msg.sender] < mediaStructs[code].price) return false;
-    wallets[msg.sender] -= amount;
-    wallets[receiver] += amount;
+    if (wallets[5] < mediaStructs[code].price) return false;
+    wallets[5] -= amount;
+    wallets[0] += amount;
     Transfer(msg.sender, receiver, amount);
     consumerStructs[msg.sender].consumerMediaList.push(code);
     mediaStructs[code].consumers.push(msg.sender);
@@ -68,13 +70,13 @@ contract Store {
     return consumersList;
   }
 
-  function getWallet(address creatorAddress) view public returns (uint) {
+/*  function getWallet(address creatorAddress) view public returns (uint) {
     return wallets[creatorAddress];
   }
+*/
 
-  function getMedia(address creatorAddress, uint index, address consumerAddress) view public returns (string, bytes32, uint) {
+  function getMedia(address creatorAddress, uint index) view public returns (string, bytes32, uint) {
     string url = creatorStructs[creatorAddress].creatorMediaList[index];
-    require(checkMediaForConsumer(url, consumerAddress));
     return (url, mediaStructs[url].title, mediaStructs[url].price);
   }
 
