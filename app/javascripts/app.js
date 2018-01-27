@@ -45,18 +45,6 @@ window.setAccount = function() {
   console.log("setAccount: " + web3.eth.defaultaAccount);
 }
 
-window.addCreation = function() {
-  let creatorAddress = web3.eth.defaultaAccount;
-  let mediaTitle = $("#title").val();
-  let mediaPrice = parseInt($("#price").val());
-  // let mediaHash = mediaTitle;
-  Store.deployed().then(function(contractInstance) {
-    contractInstance.addMedia.sendTransaction(creatorAddress, mediaTitle, mediaTitle, mediaPrice, {gas: 140000, from: web3.eth.accounts[0]}).then(function(r) {
-      console.log(r);
-    });
-  });
-  setAccount();
-}
 
 function loadCreator() {
   $("#logs").append(" user is a creator. Display creator content </br>");
@@ -75,8 +63,8 @@ function loadCreator() {
           Store.deployed().then(function(contractInstance2) {
             contractInstance2.getMedia.call(address, i).then(function(r1) {
               // console.log(r1);
-              console.log(web3.toUtf8(r1[0]));
-              let cururl = web3.toUtf8(r1[0]);
+              let cururl = r1[0];
+              console.log("url: "+cururl);
               // document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
               $("#logs").append('<audio controls id="output" src="'+cururl+'"></audio>');
             });
@@ -142,7 +130,7 @@ window.upload = function() {
       let mediaTitle = $("#title").val();
       let mediaPrice = parseInt($("#price").val());
       Store.deployed().then(function(contractInstance) {
-        contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 10000, from: web3.eth.accounts[0]}).then(function(r) {
+        contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
           console.log("here2: "+r);
         });
       });

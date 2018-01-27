@@ -16,6 +16,8 @@ contract Store {
     bytes32[] Media;
   }
 
+  string[] allmediaList;
+
   mapping (address => uint) public wallets;
   mapping (string => Media) mediaStructs;
   mapping (address => Creator) creatorStructs;
@@ -51,7 +53,9 @@ contract Store {
   */
 
   function addMedia(string code, bytes32 mname, uint cost) view public returns (bytes32, uint) {
+    require(validMedia(code));
     creatorStructs[msg.sender].mediaList.push(code);
+    allmediaList.push(code);
     mediaStructs[code].title = mname;
     mediaStructs[code].price = cost;
     return (mediaStructs[code].title, mediaStructs[code].price);
@@ -76,6 +80,15 @@ contract Store {
 
   function getMediaCount(address creatorAddress) view public returns (uint) {
     return creatorStructs[creatorAddress].mediaList.length;
+  }
+
+  function validMedia(string code) view public returns (bool) {
+    for(uint i = 0; i < allmediaList.length; i++) {
+      if (sha3(allmediaList[i]) == sha3(code)){
+        return false;
+      }
+    }
+    return true;
   }
 
 }
