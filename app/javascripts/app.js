@@ -75,8 +75,10 @@ function loadCreator() {
           Store.deployed().then(function(contractInstance2) {
             contractInstance2.getMedia.call(address, i).then(function(r1) {
               // console.log(r1);
-              console.log('here: '+r1[0]);
+              console.log(web3.toUtf8(r1[0]));
+              let cururl = web3.toUtf8(r1[0]);
               // document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
+              $("#logs").append('<audio controls id="output" src="'+cururl+'"></audio>');
             });
           });
         }
