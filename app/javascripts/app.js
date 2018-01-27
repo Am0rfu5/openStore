@@ -83,9 +83,6 @@ function loadCreator() {
       else {
         $("#logs").append("<h3>You have not uploaded any creations yet.</h3>");
       }
-      $("#logs").append('<input type="text" id="title" class="col-sm-2" placeholder="Title of the creation"/>&nbsp;');
-      $("#logs").append('<input type="text" id="price" class="col-sm-2" placeholder="Price"/>&nbsp;');
-      $("#logs").append('<a href="#" onclick="addCreation()" class="btn btn-primary">Add Media</a><hr>');
     });
   });
 }
@@ -120,6 +117,27 @@ function loadConsumer() {
       // });
     }
   });
+}
+
+window.upload = function() {
+  const reader = new FileReader();
+  reader.onloadend = function() {
+    const ipfs = window.IpfsApi('localhost', 5002) // Connect to IPFS
+    const buf = buffer.Buffer(reader.result) // Convert data into buffer
+    ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+      if(err) {
+        console.error(err)
+        return
+      }
+      let url = `https://ipfs.io/ipfs/${result[0].hash}`
+      console.log(`Url --> ${url}`)
+      document.getElementById("url").innerHTML= url
+      document.getElementById("url").href= url
+      document.getElementById("output").src = url
+    })
+  }
+  const photo = document.getElementById("media");
+  reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
 }
 
 $( document ).ready(function() {

@@ -5,7 +5,7 @@ contract Store {
   // We use the struct datatype to store the voter information.
   struct Media {
     bytes32 title;
-    address[] audience;
+    bytes32 hash;
     uint price;
   }
 
@@ -13,9 +13,14 @@ contract Store {
     bytes32[] mediaList;
   }
 
+  struct Consumer {
+    bytes32[] Media;
+  }
+
   mapping (address => uint) public wallets;
   mapping (bytes32 => Media) mediaStructs;
   mapping (address => Creator) creatorStructs;
+  mapping (address => Consumer) consumerStructs;
   bytes32[] public creatorsList;
   bytes32[] public consumersList;
 
@@ -67,7 +72,7 @@ contract Store {
 
   function getMedia(address creatorAddress, uint index) view public returns (bytes32, bytes32, address[], uint) {
     bytes32 hashcode = creatorStructs[creatorAddress].mediaList[index];
-    return (hashcode, mediaStructs[hashcode].title, mediaStructs[hashcode].audience, mediaStructs[hashcode].price);
+    //return (hashcode, mediaStructs[hashcode].title, mediaStructs[hashcode].audience, mediaStructs[hashcode].price);
   }
 
   function getMediaCount(address creatorAddress) view public returns (uint) {
