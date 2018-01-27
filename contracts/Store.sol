@@ -9,7 +9,7 @@ contract Store {
   }
 
   struct Creator {
-    bytes32[] mediaList;
+    string[] mediaList;
   }
 
   struct Consumer {
@@ -17,7 +17,7 @@ contract Store {
   }
 
   mapping (address => uint) public wallets;
-  mapping (bytes32 => Media) mediaStructs;
+  mapping (string => Media) mediaStructs;
   mapping (address => Creator) creatorStructs;
   mapping (address => Consumer) consumerStructs;
   bytes32[] public creatorsList;
@@ -50,7 +50,7 @@ contract Store {
   }
   */
 
-  function addMedia(bytes32 code, bytes32 mname, uint cost) view public returns (bytes32, uint) {
+  function addMedia(string code, bytes32 mname, uint cost) view public returns (bytes32, uint) {
     creatorStructs[msg.sender].mediaList.push(code);
     mediaStructs[code].title = mname;
     mediaStructs[code].price = cost;
@@ -69,8 +69,8 @@ contract Store {
     return wallets[creatorAddress];
   }
 
-  function getMedia(address creatorAddress, uint index) view public returns (bytes32, bytes32, uint) {
-    bytes32 url = creatorStructs[creatorAddress].mediaList[index];
+  function getMedia(address creatorAddress, uint index) view public returns (string, bytes32, uint) {
+    string url = creatorStructs[creatorAddress].mediaList[index];
     return (url, mediaStructs[url].title, mediaStructs[url].price);
   }
 

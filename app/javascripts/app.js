@@ -142,7 +142,7 @@ window.upload = function() {
       let mediaTitle = $("#title").val();
       let mediaPrice = parseInt($("#price").val());
       Store.deployed().then(function(contractInstance) {
-        contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 140000, from: web3.eth.accounts[0]}).then(function(r) {
+        contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 10000, from: web3.eth.accounts[0]}).then(function(r) {
           console.log("here2: "+r);
         });
       });
