@@ -73,9 +73,10 @@ function loadCreator() {
         $("#logs").append('<h3>You have uploaded '+mediaCount+' creations.</h3><pre id="json"></pre>');
         for (let i = 0; i < mediaCount; i++) {
           Store.deployed().then(function(contractInstance2) {
-            contractInstance2.getMedia.call(address, i).then(function(r) {
-              console.log(r);
-              document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
+            contractInstance2.getMedia.call(address, i).then(function(r1) {
+              // console.log(r1);
+              console.log('here: '+r1[0]);
+              // document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
             });
           });
         }
@@ -84,6 +85,7 @@ function loadCreator() {
         $("#logs").append("<h3>You have not uploaded any creations yet.</h3>");
       }
     });
+    $("#logs").append('form action="/"><fieldset><legend>Upload photo</legend><input type="file" name="media" id="media"><input type="text" name="title" id="title" placeholder="title"><input type="text" name="price" id="price" placeholder="price"><button type="button" onclick="upload()">Upload</button></fieldset></form></br></br><a id="url"></a></br></br><audio controls id="output"></audio>');
   });
 }
 
@@ -134,6 +136,15 @@ window.upload = function() {
       document.getElementById("url").innerHTML= url
       document.getElementById("url").href= url
       document.getElementById("output").src = url
+      let creatorAddress = web3.eth.defaultaAccount;
+      let mediaTitle = $("#title").val();
+      let mediaPrice = parseInt($("#price").val());
+      Store.deployed().then(function(contractInstance) {
+        contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 140000, from: web3.eth.accounts[0]}).then(function(r) {
+          console.log("here2: "+r);
+        });
+      });
+      setAccount();
     })
   }
   const photo = document.getElementById("media");

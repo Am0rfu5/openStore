@@ -5,7 +5,6 @@ contract Store {
   // We use the struct datatype to store the voter information.
   struct Media {
     bytes32 title;
-    bytes32 hash;
     uint price;
   }
 
@@ -51,11 +50,11 @@ contract Store {
   }
   */
 
-  function addMedia(bytes32 code, bytes32 mname, uint cost) public {
+  function addMedia(bytes32 code, bytes32 mname, uint cost) view public returns (bytes32, uint) {
     creatorStructs[msg.sender].mediaList.push(code);
     mediaStructs[code].title = mname;
     mediaStructs[code].price = cost;
-    // return (mediaStructs[code].title, mediaStructs[code].price, creatorStructs[msg.sender].mediaList.length);
+    return (mediaStructs[code].title, mediaStructs[code].price);
   }
 
   function allCreators() view public returns (bytes32[]) {
@@ -70,9 +69,9 @@ contract Store {
     return wallets[creatorAddress];
   }
 
-  function getMedia(address creatorAddress, uint index) view public returns (bytes32, bytes32, address[], uint) {
-    bytes32 hashcode = creatorStructs[creatorAddress].mediaList[index];
-    //return (hashcode, mediaStructs[hashcode].title, mediaStructs[hashcode].audience, mediaStructs[hashcode].price);
+  function getMedia(address creatorAddress, uint index) view public returns (bytes32, bytes32, uint) {
+    bytes32 url = creatorStructs[creatorAddress].mediaList[index];
+    return (url, mediaStructs[url].title, mediaStructs[url].price);
   }
 
   function getMediaCount(address creatorAddress) view public returns (uint) {
