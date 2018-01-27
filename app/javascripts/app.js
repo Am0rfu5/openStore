@@ -65,7 +65,7 @@ function loadCreator() {
               // console.log(r1);
               let cururl = r1[0];
               console.log("url: "+cururl);
-              // document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
+              $("#logs").append('</br></br>'+web3.toUtf8(r1[1]));
               $("#logs").append('<audio controls id="output" src="'+cururl+'"></audio>');
             });
           });
