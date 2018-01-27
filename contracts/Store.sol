@@ -54,6 +54,7 @@ contract Store {
     require(validMedia(code));
     creatorStructs[msg.sender].creatorMediaList.push(code);
     allMedia.push(code);
+    mediaStructs[code].creator = msg.sender;
     mediaStructs[code].title = mname;
     mediaStructs[code].price = cost;
     return (mediaStructs[code].title, mediaStructs[code].price);

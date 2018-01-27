@@ -93,14 +93,13 @@ function loadConsumer() {
         if (mediaCount != 0) {
           $("#"+creators[key]).append(mediaCount+' songs');
           // </h3><pre id="json"></pre>');
-          // for (let i = 0; i < mediaCount; i++) {
-          //   Store.deployed().then(function(contractInstance2) {
-          //     contractInstance2.getMedia.call(address, i).then(function(r) {
-          //       console.log(r);
-          //       document.getElementById("json").innerHTML += JSON.stringify(r, undefined, 2);
-          //     });
-          //   });
-          // }
+          $("#"+creators[key]).append('<table><tr>');
+          for (let i = 0; i < mediaCount; i++) {
+              var r = await contractInstance.getMedia.call(address, i);
+                console.log("here5: "+r[0]);
+                $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><audio controls src="'+r[0]+'"></audio></td>');
+          }
+          $('#'+creators[key]).append('</tr></table>');
         }
         else {
           $("#"+creators[key]).append('No songs');
