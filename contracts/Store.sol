@@ -21,7 +21,7 @@ contract Store {
   string[] allMedia;
 
 //  mapping (address => uint) public wallets;
-  uint[] wallets;
+  mapping (address => uint) wallets;
   mapping (string => Media) mediaStructs;
   mapping (address => Creator) creatorStructs;
   mapping (address => Consumer) consumerStructs;
@@ -36,16 +36,16 @@ contract Store {
   function Store(bytes32[] candidateNames1, bytes32[] candidateNames2, uint[] balance) public {
     creatorsList = candidateNames1;
     consumersList = candidateNames2;
-    wallets = balance;
+    wallets[tx.origin] = 1000;
   }
 
 
   function buy(string code) payable public returns(bool success) {
     uint amount = mediaStructs[code].price;
     address receiver = mediaStructs[code].creator;
-    if (wallets[5] < mediaStructs[code].price) return false;
-    wallets[5] -= amount;
-    wallets[0] += amount;
+    if (wallets[msg.sender] < mediaStructs[code].price) return false;
+    wallets[msg.sender] -= amount;
+    wallets[receiver] += amount;
     Transfer(msg.sender, receiver, amount);
     consumerStructs[msg.sender].consumerMediaList.push(code);
     mediaStructs[code].consumers.push(msg.sender);
@@ -70,10 +70,10 @@ contract Store {
     return consumersList;
   }
 
-/*  function getWallet(address creatorAddress) view public returns (uint) {
-    return wallets[creatorAddress];
+  function getWallet(address personAddress) view public returns (uint) {
+    return wallets[personAddress];
   }
-*/
+
 
   function getMedia(address creatorAddress, uint index) view public returns (string, bytes32, uint) {
     string url = creatorStructs[creatorAddress].creatorMediaList[index];
@@ -82,7 +82,7 @@ contract Store {
 
   function checkMediaForConsumer(string code, address consumerAddress) view public returns (bool) {
     for (uint i = 0; i < consumerStructs[consumerAddress].consumerMediaList.length; i++){
-      if (sha3(consumerStructs[consumerAddress].consumerMediaList[i]) == sha3(code)) {
+      if (keccak256(consumerStructs[consumerAddress].consumerMediaList[i]) == keccak256(code)) {
         return true;
       }
     }
@@ -95,7 +95,7 @@ contract Store {
 
   function validMedia(string code) view public returns (bool) {
     for(uint i = 0; i < allMedia.length; i++) {
-      if (sha3(allMedia[i]) == sha3(code)){
+      if (keccak256(allMedia[i]) == keccak256(code)){
         return false;
       }
     }
