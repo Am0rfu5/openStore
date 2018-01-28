@@ -75,18 +75,18 @@ function loadCreator() {
         $("#logs").append("<h3>You have not uploaded any creations yet.</h3>");
       }
     });
-    $("#logs").append('<form class="form-inline" action="/"><div class="form-group"><fieldset><h3>Upload Song!</h3><input type="file" class="form-control-file" name="media" id="media"><input type="text" class="form-control" name="title" id="title" placeholder="title"><input class="form-control" type="text" name="price" id="price" placeholder="price"><button type="button" class="btn btn-primary mb-2" onclick="upload()">Upload</button></fieldset></div></form></br></br><a id="url"></a><hr></br></br>');
+    $("#logs").append('<form class="form-inline" action="/"><div class="form-group"><fieldset><h3>Upload Song!</h3><input type="file" class="form-control-file" name="media" id="media"><input type="text" class="form-control" name="title" id="title" placeholder="title"><input class="form-control" type="text" name="price" id="price" placeholder="price">&nbsp:<button type="button" class="btn btn-primary mb-2" onclick="upload()">Upload</button></fieldset></div></form></br></br><a id="url"></a><hr></br></br>');
     $("#right-lower").html('');
     showTransactions();
   });
 }
 
 function showTransactions() {
-  $("#right-upper").html('<h2>Transaction</h2>');
+  $("#right-upper").html('<h2>Transactions</h2>');
   Store.deployed().then(function(contractInstance) {contractInstance.Transfer({_to: web3.eth.defaultaAccount}, {fromBlock: 0,toBlock: 'latest'})
     .get((error, logs) => {
      logs.forEach(
-       log => $("#right-upper").append("<span style=\"color:#47A244\">"+JSON.stringify(logs[0].args._from)+" -- "+JSON.stringify(logs[0].args._value)+" $</span></br></br>")
+       log => $("#right-upper").append("<span style=\"color:#47A244\">"+JSON.parse(JSON.stringify(logs[0].args._from))+" -- "+JSON.parse(JSON.stringify(logs[0].args._value))+" $</span></br></br>")
      )
     });
   });
@@ -175,7 +175,7 @@ window.upload = function() {
       let mediaPrice = parseInt($("#price").val());
       Store.deployed().then(function(contractInstance) {
         contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
-          console.log("here2: "+r);
+          console.log("imppp: "+r);
         });
       });
       setAccount();
