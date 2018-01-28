@@ -47,7 +47,7 @@ window.setAccount = function() {
 
 
 function loadCreator() {
-  $("#logs").append(" user is a creator. Display creator content </br>");
+  $("#logs").append("<h3> User Type: Creator</h3><hr>");
   let address = web3.eth.defaultaAccount;
   Store.deployed().then(function(contractInstance) {
     contractInstance.getWallet.call(address).then(function(balance) {
@@ -58,7 +58,7 @@ function loadCreator() {
     contractInstance.getMediaCount.call(address).then(function(mediaSize) {
       let mediaCount = parseInt(mediaSize.c[0]);
       if (mediaCount != 0) {
-        $("#logs").append('<h3>You have uploaded '+mediaCount+' creations.</h3>');
+        $("#logs").append('<h3>You have uploaded '+mediaCount+' creations.</h3></br></br></br></br><h2>Songs Uploaded</h2>');
         for (let i = 0; i < mediaCount; i++) {
           Store.deployed().then(function(contractInstance2) {
             contractInstance2.getMedia.call(address, i).then(function(r1) {
@@ -75,7 +75,7 @@ function loadCreator() {
         $("#logs").append("<h3>You have not uploaded any creations yet.</h3>");
       }
     });
-    $("#logs").append('<form class="form-inline" action="/"><div class="form-group"><fieldset><h3>Upload Song!</h3><input type="file" class="form-control-file" name="media" id="media"><input type="text" class="form-control" name="title" id="title" placeholder="title"><input class="form-control" type="text" name="price" id="price" placeholder="price"><button type="button" class="btn btn-primary mb-2" onclick="upload()">Upload</button></fieldset></div></form></br></br><a id="url"></a></br></br>');
+    $("#logs").append('<form class="form-inline" action="/"><div class="form-group"><fieldset><h3>Upload Song!</h3><input type="file" class="form-control-file" name="media" id="media"><input type="text" class="form-control" name="title" id="title" placeholder="title"><input class="form-control" type="text" name="price" id="price" placeholder="price"><button type="button" class="btn btn-primary mb-2" onclick="upload()">Upload</button></fieldset></div></form></br></br><a id="url"></a><hr></br></br>');
     $("#right-lower").html('');
     showTransactions();
   });
@@ -93,7 +93,7 @@ function showTransactions() {
 }
 
 function loadConsumer() {
-  $("#logs").append(" user is a consumer. Display consumer content </br>");
+  $("#logs").append("<h3> User Type: Consumer</h3><hr>");
   $("#right-upper").html('');
   let address = web3.eth.defaultaAccount;
   // Store.deployed().then(function(contractInstance) {
