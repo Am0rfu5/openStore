@@ -51,7 +51,7 @@ function loadCreator() {
   let address = web3.eth.defaultaAccount;
   Store.deployed().then(function(contractInstance) {
     contractInstance.getWallet.call(address).then(function(balance) {
-      $("#logs").append("<h3>Your account balance :  $"+balance.toString()+"</h3>");
+      $("#right-lower").html("<h3>Your account balance :  $"+balance.toString()+"</h3>");
     });
   });
   Store.deployed().then(function(contractInstance) {
@@ -75,12 +75,26 @@ function loadCreator() {
         $("#logs").append("<h3>You have not uploaded any creations yet.</h3>");
       }
     });
-    $("#logs").append('<form action="/"><fieldset><h3>Upload Song!</h3><input type="file" name="media" id="media"><input type="text" name="title" id="title" placeholder="title"><input type="text" name="price" id="price" placeholder="price"><button type="button" onclick="upload()">Upload</button></fieldset></form></br></br><a id="url"></a></br></br>');
+    $("#logs").append('<form class="form-inline" action="/"><div class="form-group"><fieldset><h3>Upload Song!</h3><input type="file" class="form-control-file" name="media" id="media"><input type="text" class="form-control" name="title" id="title" placeholder="title"><input class="form-control" type="text" name="price" id="price" placeholder="price"><button type="button" class="btn btn-primary mb-2" onclick="upload()">Upload</button></fieldset></div></form></br></br><a id="url"></a></br></br>');
+    $("#right-lower").html('');
+    showTransactions();
+  });
+}
+
+function showTransactions() {
+  $("#right-upper").html('<h2>Transaction</h2>');
+  Store.deployed().then(function(contractInstance) {contractInstance.Transfer({_to: web3.eth.defaultaAccount}, {fromBlock: 0,toBlock: 'latest'})
+    .get((error, logs) => {
+     logs.forEach(
+       log => $("#right-upper").append("<span style=\"color:#47A244\">"+JSON.stringify(logs[0].args._from)+" -- "+JSON.stringify(logs[0].args._value)+" $</span></br></br>")
+     )
+    });
   });
 }
 
 function loadConsumer() {
   $("#logs").append(" user is a consumer. Display consumer content </br>");
+  $("#right-upper").html('');
   let address = web3.eth.defaultaAccount;
   // Store.deployed().then(function(contractInstance) {
   //   contractInstance.getWallet.call(address).then(function(balance) {
@@ -90,7 +104,7 @@ function loadConsumer() {
   Store.deployed().then(async function(contractInstance) {
 
     for (var key in creators) {
-      $("#logs").append('</br><button type="button" class="btn btn-info" data-toggle="collapse" data-target=#'+creators[key]+'>'+creators[key]+'</button><div id='+creators[key]+' class="collapse"></div>');
+      $("#logs").append('</br><button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="collapse" data-target=#'+creators[key]+'>'+creators[key]+'</button><div id='+creators[key]+' class="collapse"></div>');
       let address = key;
       var mediaSize = await contractInstance.getMediaCount.call(address);
       // .then(function(mediaSize) {
@@ -98,28 +112,37 @@ function loadConsumer() {
         let mediaCount = parseInt(mediaSize.c[0]);
         if (mediaCount != 0) {
           $("#"+creators[key]).append(mediaCount+' songs');
-          $("#"+creators[key]).append('<div class="table-responsive"><table class="table table-bordered"><thead><tr><th>Creator</th><th>Song</th></tr></thead><tbody>');
+          $("#"+creators[key]).append('<div class="table-responsive"><table class="table table-bordered table-dark"><tbody id='+ creators[key]+"tab" +'>');
+
           for (let i = 0; i < mediaCount; i++) {
               var r = await contractInstance.getMedia.call(address, i);
                 console.log("here5: "+r[0]);
                 var checkBool = await contractInstance.checkMediaForConsumer.call(r[0],web3.eth.defaultaAccount);
                 console.log("checkMediaForConsumer: "+checkBool);
                 if (checkBool) {
-                  $('#'+creators[key]).append('<tr><td><h3>'+web3.toUtf8(r[1])+'<h3></td><td><audio controls src="'+r[0]+'"></audio></td></tr>');
+                  $('#'+creators[key]+"tab").append('<tr><td scope="row"><h3>'+web3.toUtf8(r[1])+'</h3></td><td><audio controls src="'+r[0]+'"></audio></td></tr>');
                 }
                 else{
-                  $('#'+creators[key]).append('<tr><td><h3>'+web3.toUtf8(r[1])+'<h3></td><td><button type="button" onclick="buy(\'' + r[0] + '\')">Buy</button></td></tr>');
+                  $('#'+creators[key]+"tab").append('<tr><td><h3>'+web3.toUtf8(r[1])+'</h3></td><td><button type="button" class="btn btn-primary" onclick="buy(\'' + r[0] + '\')">Buy</button></td></tr>');
                 }
-
           }
+
           $('#'+creators[key]).append('</tbody></table></div>');
-        
+
       }
       else {
         $("#"+creators[key]).append('No songs');
       }
     }
-    $("#logs").append('<hr><br/><input type="text" id="amountToWallet" class="col-sm-2" placeholder="Add to wallet"/> $ &nbsp;<a href="#" onclick="addToWallet()" class="btn btn-primary">Buy</a>');
+    let address = web3.eth.defaultaAccount;
+    Store.deployed().then(function(contractInstance) {
+      contractInstance.getWallet.call(address).then(function(balance) {
+        $("#right-lower").append("<h3>Your account balance :  $"+balance.toString()+"</h3>");
+      });
+    });
+
+    $("#right-lower").html('<h3>Add to Wallet</h3>');
+    $("#right-lower").append('<hr><br/><input type="text" id="amountToWallet" class="col-sm-2" placeholder="Add to wallet"/> $ &nbsp;<a href="#" onclick="addToWallet()" class="btn btn-primary">Buy</a>');
   });
 }
 
