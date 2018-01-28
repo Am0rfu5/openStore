@@ -93,41 +93,37 @@ function loadConsumer() {
       $("#logs").append('</br><button type="button" class="btn btn-info" data-toggle="collapse" data-target=#'+creators[key]+'>'+creators[key]+'</button><div id='+creators[key]+' class="collapse"></div>');
       let address = key;
       var mediaSize = await contractInstance.getMediaCount.call(address);
-      // .then(function(mediaSize) {
+      let mediaCount = parseInt(mediaSize.c[0]);
+      if (mediaCount != 0) {
+        $("#"+creators[key]).append(mediaCount+' songs');
+        $("#"+creators[key]).append('<div class="table-responsive"><table class="table table-bordered"><tr>');
+        for (let i = 0; i < mediaCount; i++) {
+            var r = await contractInstance.getMedia.call(address, i);
+              console.log("here5: "+r[0]);
+              var checkBool = await contractInstance.checkMediaForConsumer.call(r[0],web3.eth.defaultaAccount);
+              console.log("checkMediaForConsumer: "+checkBool);
+              if (checkBool) {
+                $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><audio controls src="'+r[0]+'"></audio></td>');
+              }
+              else{
+                $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><button type="button" onclick="buy(\'' + r[0] + '\')">Buy</button></td>');
+              }
 
-        let mediaCount = parseInt(mediaSize.c[0]);
-        if (mediaCount != 0) {
-          $("#"+creators[key]).append(mediaCount+' songs');
-          $("#"+creators[key]).append('<div class="table-responsive"><table class="table table-bordered"><tr>');
-          for (let i = 0; i < mediaCount; i++) {
-              var r = await contractInstance.getMedia.call(address, i);
-                console.log("here5: "+r[0]);
-                var checkBool = await contractInstance.checkMediaForConsumer.call(r[0],web3.eth.defaultaAccount);
-                console.log("checkMediaForConsumer: "+checkBool);
-                if (checkBool) {
-                  $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><audio controls src="'+r[0]+'"></audio></td>');
-                }
-                else{
-                  $('#'+creators[key]).append('<td>'+web3.toUtf8(r[1])+'</td><td><button type="button" onclick="buy(\'' + r[0] + '\')">Buy</button></td>');
-                }
-
-          }
-          $('#'+creators[key]).append('</tr></table></div>');
         }
-        else {
-          $("#"+creators[key]).append('No songs');
-        }
-
-      // });
+        $('#'+creators[key]).append('</tr></table></div>');
+      }
+      else {
+        $("#"+creators[key]).append('No songs');
+      }
     }
+    $("#logs").append('<hr><br/><input type="text" id="amountToWallet" class="col-sm-2" placeholder="Add to wallet"/> $ &nbsp;<a href="#" onclick="addToWallet()" class="btn btn-primary">Buy</a>');
   });
 }
 
 window.buy = function(url){
   Store.deployed().then(function(contractInstance) {
-    contractInstance.buy.call(url,{gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
+    contractInstance.buy.sendTransaction(url,{gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
       console.log("urlll: "+url);
-
       console.log("buy here: "+r);
     });
   });
@@ -161,6 +157,15 @@ window.upload = function() {
   }
   const song = document.getElementById("media");
   reader.readAsArrayBuffer(song.files[0]); // Read Provided File
+}
+
+window.addToWallet = function() {
+  let amtow = $("#amountToWallet").val();
+  Store.deployed().then(function(contractInstance) {
+    contractInstance.addToWallet.sendTransaction(amtow, {gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
+      console.log("amount added : "+r);
+    });
+  });
 }
 
 $( document ).ready(function() {

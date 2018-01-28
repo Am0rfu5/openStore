@@ -20,8 +20,7 @@ contract Store {
 
   string[] allMedia;
 
-//  mapping (address => uint) public wallets;
-  mapping (address => uint) wallets;
+  mapping (address => uint) public wallets;
   mapping (string => Media) mediaStructs;
   mapping (address => Creator) creatorStructs;
   mapping (address => Consumer) consumerStructs;
@@ -36,7 +35,6 @@ contract Store {
   function Store(bytes32[] candidateNames1, bytes32[] candidateNames2, uint[] balance) public {
     creatorsList = candidateNames1;
     consumersList = candidateNames2;
-    wallets[tx.origin] = 1000;
   }
 
 
@@ -91,6 +89,11 @@ contract Store {
 
   function getMediaCount(address creatorAddress) view public returns (uint) {
     return creatorStructs[creatorAddress].creatorMediaList.length;
+  }
+
+  function addToWallet(uint amount) payable public returns (bool success) {
+    wallets[msg.sender] += amount;
+    return true;
   }
 
   function validMedia(string code) view public returns (bool) {
