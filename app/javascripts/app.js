@@ -113,12 +113,11 @@ function loadConsumer() {
 
           }
           $('#'+creators[key]).append('</tbody></table></div>');
-        }
-        else {
-          $("#"+creators[key]).append('No songs');
-        }
-
-      // });
+        
+      }
+      else {
+        $("#"+creators[key]).append('No songs');
+      }
     }
     $("#logs").append('<hr><br/><input type="text" id="amountToWallet" class="col-sm-2" placeholder="Add to wallet"/> $ &nbsp;<a href="#" onclick="addToWallet()" class="btn btn-primary">Buy</a>');
   });
