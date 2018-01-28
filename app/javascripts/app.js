@@ -123,7 +123,7 @@ function loadConsumer() {
                   $('#'+creators[key]+"tab").append('<tr><td scope="row"><h3>'+web3.toUtf8(r[1])+'</h3></td><td><audio controls src="'+r[0]+'"></audio></td></tr>');
                 }
                 else{
-                  $('#'+creators[key]+"tab").append('<tr><td><h3>'+web3.toUtf8(r[1])+'</h3></td><td><button type="button" class="btn btn-primary" onclick="buy(\'' + r[0] + '\')">Buy</button></td></tr>');
+                  $('#'+creators[key]+"tab").append('<tr><td scope="row"><h3>'+web3.toUtf8(r[1])+'</h3></td><td><h3>'+r[2]+'$'+'</h3><button type="button" class="btn btn-primary" onclick="buy(\'' + r[0] + '\')">Buy</button></td></tr>');
                 }
           }
 
@@ -173,10 +173,13 @@ window.upload = function() {
       let creatorAddress = web3.eth.defaultaAccount;
       let mediaTitle = $("#title").val();
       let mediaPrice = parseInt($("#price").val());
-      Store.deployed().then(function(contractInstance) {
-        contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 1000000, from: web3.eth.defaultaAccount}).then(function(r) {
-          console.log("imppp: "+r);
-        });
+      Store.deployed().then(async function(contractInstance) {
+        try {
+          var r = await contractInstance.addMedia.sendTransaction(url, mediaTitle, mediaPrice, {gas: 1000000, from: web3.eth.defaultaAccount});
+        } catch (e) {
+          alert("This Duplicate Song can't be uploaded");
+        }
+        console.log("imppp: "+r);
       });
       setAccount();
     })
